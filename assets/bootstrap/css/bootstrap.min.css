@@ -1555,15 +1555,6 @@ h3,
   letter-spacing: 6px;
   font-weight: bold;
 }
-h1.cut-letter-spacing,
-.h1.cut-letter-spacing,
-h2.cut-letter-spacing,
-.h2.cut-letter-spacing,
-h3.cut-letter-spacing,
-.h3.cut-letter-spacing {
-  position: relative;
-  left: 7px;
-}
 code,
 kbd,
 pre,
@@ -2951,8 +2942,6 @@ select[multiple].form-group-lg .form-control {
 .form-control:invalid {
   -webkit-box-shadow: none;
   box-shadow: none;
-}
-.form-active .form-control:invalid {
   border-color: #f97352;
 }
 .has-feedback label ~ .form-control-feedback {
@@ -3748,55 +3737,6 @@ input[type="button"].btn-block {
   color: #252525;
   background-color: #fff;
   border-color: #fff;
-}
-@-webkit-keyframes btnCircleLoading {
-  from {
-    -webkit-transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(359deg);
-  }
-}
-@keyframes btnCircleLoading {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(359deg);
-  }
-}
-.btn-loader {
-  display: none;
-}
-.btn-loading {
-  position: relative;
-}
-.btn-loading .btn-text {
-  visibility: hidden;
-}
-.btn-loading .btn-loader {
-  -webkit-animation: btnCircleLoading .6s infinite linear;
-  animation: btnCircleLoading .6s infinite linear;
-  border-radius: 50%;
-  border: 4px rgba(255, 255, 255, 0.25) solid;
-  border-top: 4px #ffffff solid;
-  display: block;
-  height: 32px;
-  left: 50%;
-  margin-left: -16px;
-  margin-top: -16px;
-  position: absolute;
-  top: 50%;
-  width: 32px;
-}
-.btn-loading.btn-default .btn-loader {
-  border-color: rgba(37, 37, 37, 0.25);
-  border-top-color: #252525;
-}
-.btn-loading.btn-default.inverse .btn-loader,
-.btn-inverse .btn-loading .btn-loader {
-  border-color: rgba(255, 255, 255, 0.25);
-  border-top-color: #ffffff;
 }
 .btn-lg,
 .btn-group-lg > .btn {

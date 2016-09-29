@@ -165,16 +165,21 @@
 
 
         // .mbr-parallax-background
-        if ($.fn.jarallax && !$.isMobile()){
-            $(document).on('destroy.parallax', function(event){
-                $(event.target).outerFind('.mbr-parallax-background')
-                    .jarallax('destroy')
-                    .css('position', '');
+        if ($.fn.jarallax){
+            $(window).on('message', function(event){
+                if ('destroy.parallax' === event.originalEvent.data.type){
+                    $('[data-parallax-id="' + event.originalEvent.data.id + '"]')
+                        .removeClass('mbr-added')
+                        .jarallax('destroy');
+                }
             });
             $(document).on('add.cards change.cards', function(event){
-                $(event.target).outerFind('.mbr-parallax-background')
-                    .jarallax()
-                    .css('position', 'relative');
+                $(event.target).outerFind('.mbr-parallax-background:not(.mbr-added)').each(function(){
+                    $(this).addClass('mbr-added');
+                    if (!$.isMobile()){
+                        $(this).attr('data-parallax-id', ('' + Math.random()).replace(/\D/g, '')).jarallax();
+                    }
+                });
             });
         }
 
@@ -322,6 +327,37 @@
                 $(window).resize();
         });
 
+        // background video
+        var updateBgImgPosition = function(img){
+            var win = {
+                width : img.parent().outerWidth(),
+                height : img.parent().outerHeight()
+            };
+            var ratio = '16/9';
+            var margin = 24;
+            var overprint = 100;
+            var css = {};
+            css.width = win.width + ((win.width * margin) / 100);
+            css.height = ratio == '16/9' ? Math.ceil((9 * win.width) / 16) : Math.ceil((3 * win.width) / 4);
+            css.marginTop = -((css.height - win.height) / 2);
+            css.marginLeft = -((win.width * (margin / 2)) / 100);
+            if (css.height < win.height){
+                css.height = win.height + ((win.height * margin) / 100);
+                css.width = ratio == '16/9' ? Math.floor((16 * win.height) / 9) : Math.floor((4 * win.height) / 3);
+                css.marginTop = -((win.height * (margin / 2)) / 100);
+                css.marginLeft = -((css.width - win.width) / 2);
+            }
+            css.width += overprint;
+            css.height += overprint;
+            css.marginTop -= overprint / 2;
+            css.marginLeft -= overprint / 2;
+            img.css(css);
+        };
+        $(window).smartresize(function(){
+            $('.mbr-background-video-preview img').each(function(){
+                updateBgImgPosition($(this));
+            });
+        });
         $(document).on('add.cards', function(event){
             $(event.target).outerFind('[data-bg-video]').each(function(){
                 var result, videoURL = $(this).data('bg-video'), patterns = [
@@ -333,33 +369,29 @@
                     if (result = patterns[i].exec(videoURL)){
                         var previewURL = 'http' + ('https:' == location.protocol ? 's' : '') + ':';
                         previewURL += '//img.youtube.com/vi/' + result[1] + '/maxresdefault.jpg';
+                        $('.container:eq(0)', this).before(
+                            $('<img>')
+                                .hide()
+                                .wrap('<div class="mbr-background-video-preview"></div>')
+                                .on('load', function(){
+                                    if (120 == (this.naturalWidth || this.width)){
 
-                        var $img = $('<div class="mbr-background-video-preview">')
-                            .hide()
-                            .css({
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center'
-                            })
-                        $('.container:eq(0)', this).before($img);
-
-                        $('<img>').on('load', function() {
-                            if (120 == (this.naturalWidth || this.width)) {
-                                // selection of preview in the best quality
-                                var file = this.src.split('/').pop();
-                                switch (file){
-                                    case 'maxresdefault.jpg':
-                                        this.src = this.src.replace(file, 'sddefault.jpg');
-                                        break;
-                                    case 'sddefault.jpg':
-                                        this.src = this.src.replace(file, 'hqdefault.jpg');
-                                        break;
-                                }
-                            } else {
-                                $img.css('background-image', 'url("' + this.src + '")')
-                                    .show();
-                            }
-                        }).attr('src', previewURL)
-
+                                        // selection of preview in the best quality
+                                        var file = this.src.split('/').pop();
+                                        switch (file){
+                                            case 'maxresdefault.jpg':
+                                                this.src = this.src.replace(file, 'sddefault.jpg');
+                                                break;
+                                            case 'sddefault.jpg':
+                                                this.src = this.src.replace(file, 'hqdefault.jpg');
+                                                break;
+                                        }
+                                        
+                                    } else $(this).show();
+                                })
+                                .attr('src', previewURL)
+                                .parent()
+                        );
                         if ($.fn.YTPlayer && !$.isMobile()){
                             var params = eval('(' + ($(this).data('bg-video-params') || '{}') + ')');
                             $('.container:eq(0)', this).before('<div class="mbr-background-video"></div>').prev()
@@ -417,7 +449,7 @@
         var e = document.createElement("section");
         e.id = "top-1";
         e.className = "engine";
-        e.innerHTML = '<a href="http://mobirise.com">mobirise.com</a> Mobirise v2.5.2';
+        e.innerHTML = '<a href="http://mobirise.com">mobirise.com</a> Mobirise v1.9.11';
         document.body.insertBefore(e, document.body.childNodes[0]);
     }
 }();
